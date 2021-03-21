@@ -1,4 +1,4 @@
-- hosts: 192.168.43.214
+- hosts: docker-hosts
   tasks:
   - name: Docker conf file
     yum_repository:
