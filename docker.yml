@@ -1,0 +1,53 @@
+- hosts: 192.168.43.214
+  tasks:
+  - name: Docker conf file
+    yum_repository:
+           baseurl: https://download.docker.com/linux/centos/7/x86_64/stable/
+           name: docker
+           description: yum repo docker
+           gpgcheck: no
+
+  - shell: "yum install docker-ce --nobest -y"
+
+  - service:
+          name: "docker"
+          state: started
+          enabled: yes
+  - pip:
+          name: "docker"
+
+  - docker_image:
+          name: httpd
+          tag: latest
+          source: pull
+
+  - file:
+         path: /home/dockerweb/
+         state: directory
+
+  - copy:
+          src: my.html
+          dest: /home/dockerweb/index.html
+
+  - docker_container:
+          name: gsos13
+          image: httpd:latest
+          state: started
+          exposed_ports: "80"
+          ports: "8080:80"
+          volumes:
+                  - /home/dockerweb:/usr/local/apache2/htdocs/
+  - firewalld:
+           port: "8080/tcp"
+           zone: public
+           state: enabled
+           immediate: yes
+           permanent: yes
+
+  - service:
+          name: "firewalld"
+          state: restarted
+
+
+  - debug:
+          msg: "{{ansible_facts['docker_container']['NetworkSettings']['IPAddress']}}"
