@@ -1,0 +1,64 @@
+---
+# tasks file for master-node
+
+  - name: Installing packages
+    package:
+       name: "{{ item  }}"
+       state: present
+    loop:
+      - docker
+      - iproute-tc
+
+  - name: Updating Docker cgroup driver
+    copy:
+      dest: /etc/docker/daemon.json
+      content: |
+        {
+          "exec-opts": ["native.cgroupdriver=systemd"]
+        }
+
+  - name: Copying the yum repo for Kubernates
+    copy:
+      dest: /etc/yum.repos.d/kubernetes.repo
+      src: /ws3/kubernetes.repo
+
+  - name: Installing Kubeadm
+    shell: "yum install -y kubeadm --disableexcludes=kubernetes"
+    tags: admins
+
+  - name: Starting the docker & kubelet services
+    service:
+      name:  "{{ item }}"
+      state: started
+      enabled: yes
+    loop:
+      - docker
+      - kubelet
+
+  - name: Pulling Kubeadm Config Images
+    shell: "kubeadm config images pull"
+    tags: adm
+
+  - name: Kubeadm init Command
+    shell: "kubeadm init --pod-network-cidr=10.240.0.0/16  --ignore-preflight-errors=NumCPU  --ignore-preflight-errors=Mem"
+    run_once: True
+    tags: init
+
+  - name:
+    shell: |
+      mkdir -p $HOME/.kube
+      sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+      sudo chown $(id -u):$(id -g) $HOME/.kube/config
+    tags: dash
+
+  - name: Join Command
+    shell: "kubeadm token create --print-join-command"
+    register: cjoin
+
+  - name: Debugging
+    debug:
+            var: cjoin.stdout
+
+  - name: Flannel
+    shell: "kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml"
+
