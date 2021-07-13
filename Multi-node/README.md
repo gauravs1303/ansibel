@@ -1,6 +1,7 @@
 # This Repository is for configuring the Kubernates Multi Node Cluster Using Ansible Play-Book
 
-# You can manually configure Kubernates Multi Node Cluster by following below steps:-
+_You can manually configure Kubernates Multi Node Cluster by following below steps:-_
+ 
 =================================================================================================================================================================================
 # **Master**
 Step1:-
@@ -84,11 +85,14 @@ Step6:- Run this command in worker nodes to join master #kubeadm join <token>
 # Error on kubeadm init command:-
 
 1.[WARNING IsDockerSystemdCheck]:-
+
 #vi /etc/docker/daemon.json
+  
 ---
 {
   "exec-opts": ["native.cgroupdriver=systemd"]
 }
+
 ---
 #systemctl restart docker
 Check:- #docker info | grep Driver
