@@ -1,0 +1,17 @@
+- hosts: 127.0.0.1
+# EC2 Instances
+  roles:
+        - role:  "launch-ins"
+          tags: ins
+
+# Master Node
+
+- hosts: tag_node_master
+  roles:
+        - role: "master-node"
+
+# Slave Node
+
+- hosts: tag_node_slave
+  roles:
+        - role: "slave-node"
