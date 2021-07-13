@@ -1,0 +1,11 @@
+---
+# vars file for launch-ins
+
+access: 
+secret: 
+ami: ami-010aff33ed5991201
+region: ap-south-1
+instype: t2.micro
+vpcid: subnet-5cdae034
+sgroup: sg-09d70f23a31163836
+key: mykey1111

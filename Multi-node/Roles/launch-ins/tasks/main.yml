@@ -1,0 +1,21 @@
+---
+# tasks file for launch-ins
+
+- ec2:
+      region: ap-south-1
+      image: "{{ ami }}"
+      instance_type: "{{ instype }}"
+      vpc_subnet_id: "{{ vpcid }}"
+      group_id: "{{ sgroup }}"
+      key_name: "{{ key }}"
+      state: present
+      aws_access_key: "{{ access }}"
+      aws_secret_key: "{{ secret }}"
+      count: 1
+      instance_tags:
+        Name: "{{ item.name  }}"
+        node: "{{ item.node  }}"
+  loop:
+      - { name: 'master123', node: 'master' }
+      - { name: 'slave1', node: 'slave' }
+      - { name: 'slave2', node: 'slave' }
