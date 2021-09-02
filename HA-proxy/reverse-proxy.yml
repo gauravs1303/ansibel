@@ -1,0 +1,43 @@
+- hosts: tag_server_backend
+  tasks:
+
+  - name: installing the http package
+    package:
+           name: "httpd"
+           state: present
+
+  - name: installing the php
+    package:
+           name: "php"
+           state: present
+
+  - name: copying the content
+    template:
+           src: ip-test.php
+           dest: /var/www/html/index.php
+
+  - name: starting the backend servers
+    service:
+        name: "httpd"
+        state: started
+
+- hosts: tag_server_proxy
+  vars:
+     port: "7001"
+
+  tasks:
+  - name: installing HAproxy
+    package:
+        name: "haproxy"
+        state: "present"
+
+  - name: copy haproxy conf file
+    template:
+        dest: "/etc/haproxy/haproxy.cfg"
+        src: "/etc/haproxy/haproxy.cfg"
+
+  - name: starting haproxy
+    service:
+      name: haproxy
+      state: restarted
+
